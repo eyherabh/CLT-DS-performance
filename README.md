@@ -95,12 +95,12 @@ With this modification, the script run in 2.96 s.
 
 Like the original script, the improved versions are not strictly compliant with the [PGN standard](http://www.saremba.de/chessgml/standards/pgn/pgn-complete.htm). Specifically, all the scripts search for a row containing `Result`, but word could be part of a comment, as opposed to the actual field containing the result. Whether any such row would affect the outcome is debatable, but I would argue that the last script, being based on longer string sequences, has more chances of produce correct resutls. 
 
-This can be fixed by replacing `/Result/` with `/^\[Result / && NF==2`, yielding the following script
+The problems can be fixed by replacing `/Result/` with `/^\[Result / && NF==2`, yielding the following script
 
 ```bash
 for i in {0..99}; do printf -- "data/cgdata.00.pgn\0"; done \
 	| xargs -0 -n4 -P4 mawk '
-		NF==2 && /^\[Result / { res[$2]++ } 
+		/^\[Result / && NF==2 { res[$2]++ } 
 		END { print res["\"1-0\"]"], res["\"0-1\"]"], res["\"1/2-1/2\"]"] }' \
 	| mawk '{white += $1; black += $2; draw += $3} 
 		END { print white+black+draw, white, black, draw }'
@@ -109,9 +109,7 @@ This script is safer and runs faster, in just 2.74 s.
 
 However, note that the replacement above is not commutative. If I would have replaced `/Result/` with `NF==2 && /^\[Result /`, the performance would have drop dramatically, with the script running in 8.38 s. Further, one could hypothesize that replacing the regular expression `/^\[Result /` with a fixed expression `$1 == "[Result"` should improve the performace, but turned out not to be the case. Such script run in 8.89 s.
 
-Another problem with all scripts is that they fail to take into account that the `Results` field can also have a fourth value, anmely `*`. This symbol indicates that the game is inconclusive, abandoned, or in any other state than the other values. Turns out that, in the analysed pgn file, 300 games are have results with values `*`, which were ignore both by the original script and by the improved ones above.
-
-This can be fixed by adding  another value to the output, yielding the following scripts
+Another problem with all scripts is that they fail to take into account that the `Results` field can also have a fourth value, anmely `*`. This symbol indicates that the game is inconclusive, abandoned, or in any other state than the other values. Turns out that, in the analysed pgn file, 300 games are have results with values `*`, which were ignore both by the original script and by the improved ones above. This can be fixed by adding  another value to the output, yielding the following scripts
 
 ```bash
 for i in {0..99}; do printf -- "data/cgdata.00.pgn\0"; done \
