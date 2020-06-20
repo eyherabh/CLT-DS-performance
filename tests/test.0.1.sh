@@ -1,5 +1,5 @@
 set -o pipefail
-for i in {0..99}; do printf -- "data/cgdata.$i.pgn\0"; done \
+for i in {00..99}; do printf -- "data/cgdata.$i.pgn\0"; done \
 	| xargs -0 -n4 -P4 mawk '/Result/ { 
 	  	       	   		 split($0, a, "-")
 	  				 res = substr(a[1], length(a[1]), 1)

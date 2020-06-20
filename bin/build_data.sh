@@ -26,7 +26,7 @@ cd "$root" || fail "Cannot change directory to '$root'"
 trap "cd -- " EXIT
 
 printf "Downloading chess-game file\n"
-wget -O cgdata.pgn -q https://raw.githubusercontent.com/rozim/ChessData/master/mega2400_part_01.pgn
+[ -f cgdata.pgn ] || wget -O cgdata.pgn -q https://raw.githubusercontent.com/rozim/ChessData/master/mega2400_part_01.pgn
 [ $? -eq 0 ] || fail "Cannot download chess-game file" 
 
 printf "Duplicating chess-game file for test\n"
