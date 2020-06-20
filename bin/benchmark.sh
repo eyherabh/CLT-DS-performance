@@ -26,4 +26,4 @@ for i in {1..9}; do
 	\time -f '%e' -o "$tmpfile" -a bash "$1" &>/dev/null || fail "Fail while running test script"
 done
 
-bin/get_median.sh "$tmpfile"
+bin/get_percentiles.awk 25 50 75 < "$tmpfile"
