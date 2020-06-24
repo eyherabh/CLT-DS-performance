@@ -188,7 +188,7 @@ An excerpt of the output produced by this script is shown below
 ```
 Interestingly, the lines produced by the map steps are being received almost complete, except for the newline character. Whether the problem is in `awk` or in `bash` remains to be seen, but clearly, the above did not solve the problem.
 
-The problem does not arise in out case, most likely because each map step prints a very limited number of characters before it finishes and closes all output streams. Should that not be the case, one could instead save the output of each map step in different files and either execute the reduce step after all map steps have been completed, or use file locks, or even look for some freely-available implementation of map-reduce where these issues have been taken into account. Either way will most likely cause the performance to drop.
+The problem does not arise in the case of chess games here studied, most likely because each map step prints a very limited number of characters before it finishes and closes all output streams. Should that not be the case, one could instead save the output of each map step in different files and either execute the reduce step after all map steps have been completed, or use file locks, or even look for some freely-available implementation of map-reduce where these issues have been taken into account. Either way will most likely cause the performance to drop.
 
 
 ## The cost of pure bash and cat
