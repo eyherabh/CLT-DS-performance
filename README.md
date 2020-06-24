@@ -6,7 +6,9 @@ Command-line tools were shown in [this article](https://adamdrake.com/command-li
 
 # LICENSING
 
-The file data/cgdata.pgn is a copy of https://raw.githubusercontent.com/rozim/ChessData/master/mega2400_part_01.pgn. Please refer to that repository for licensing and copyright matters.
+The file `data/cgdata.pgn` is a copy of https://raw.githubusercontent.com/rozim/ChessData/master/mega2400_part_01.pgn. Please refer to that repository for licensing and copyright matters.
+
+Some files in the `tests` folder are derivative work from that shown by Adam Drake in [this article](https://adamdrake.com/command-line-tools-can-be-235x-faster-than-your-hadoop-cluster.html). Please refer to that site for licensing and copyright matters. Others are related to the abovementioned work but so heavily modified that they seem to require a separate licensing, and hence are distributed under the GPLv3 license (see [LICENSE](LICENSE)).. 
 
 All other files are licensed under the GPLv3 license (see [LICENSE](LICENSE)).
 
