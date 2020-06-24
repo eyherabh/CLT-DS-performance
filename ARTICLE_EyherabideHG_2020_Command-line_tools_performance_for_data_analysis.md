@@ -148,6 +148,47 @@ This script now is not only safer but produces correct results and runs in 2.76 
 
 ## Race conditions
 
+Like the original script, the improved versions still write to the standard output pipe (stdout) during the map step, and that can lead to race conditions. Specifically, the problem is that stdout is not line-buffered. If it were, the reduce step would always see whole lines coming from the same map step. However, since it is not, the reduce step may see lines composed of the output from different map steps. 
+
+To illustrate the problem, consider the following script
+
+```bash
+printf "%s\n" 111111 222222 333333 444444 | xargs -n 1 -P 4 -I{} \
+	awk -v word={} 'BEGIN { for(i=2^16;i--;) print word }' |
+	awk '$0 !~ /^[1-4]{6}$/; END { print NR }'
+```
+The script runs in parallel four (4) process, here called map steps. Each map step is given a different count to print repeatedly (second line). The output of all map steps is fed into another process, here called the reduce step, which prints each line which does not match the given strings. As a control, the reduce step also prints the total number of lines received. An excerpt of the output produced by this script is shown below
+
+```
+1222222
+2222333333
+322
+2222233333
+332
+```
+Note that the counts received by the reduce step are not the counts printed by the map processes. Instead, they are composed of fragments of the counts produce by different map steps. 
+
+The problem could be solved by printing to the standard error stream, which is line buffered, so I modified the script as follows
+```bash
+printf "%s\n" 111111 222222 333333 444444 | xargs -n 1 -P 4 -I{} \
+	awk -v word={} 'BEGIN { for(i=2^16;i--;) print word > "/dev/stderr" }' |&
+	awk '$0 !~ /^[1-4]{6}$/; END { print NR }'
+```
+An excerpt of the output produced by this script is shown below
+
+```
+333333444444222222
+
+
+333333444444
+
+333333222222
+
+222222444444333333
+```
+Interestingly, the lines produced by the map steps are being received almost complete, except for the newline character. Whether the problem is in `awk` or in `bash` remains to be seen, but clearly, the above did not solve the problem.
+
+The problem does not arise in out case, most likely because each map step prints a very limited number of characters before it finishes and closes all output streams. Should that not be the case, one could instead save the output of each map step in different files and either execute the reduce step after all map steps have been completed, or use file locks, or even look for some freely-available implementation of map-reduce where these issues have been taken into account. Either way will most likely cause the performance to drop.
 
 
 ## The cost of pure bash and cat
